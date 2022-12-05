@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd 
 import numpy as np
 import sympy as sp
-from is_lm import ISLM, ISLM_deploy, ISLM_get_description, definition
+from is_lm import ISLM, ISLM_deploy, ISLM_get_description, definition, parameters
 
 M,P,k,h,c,t,b,Ca,Ta,Ia,Tr,G,NX = sp.symbols('M,P,k,h,c,t,b,Ca,Ta,Ia,Tr,G,NX')
 
@@ -12,9 +12,10 @@ def main():
                     layout='wide')
 
     ##PRINCIPAL 
+    st.markdown("""---""")
     st.title('Modelo IS-LM')
     st.markdown("""---""")
-    leftcol1,rightcol1 = st.columns(2)
+    leftcol1,rightcol1 = st.columns([1.5,1],gap='medium')
     with leftcol1:
         st.markdown('**GENERALIDADES**')
         st.markdown('''Este sitio es un infograma interactivo sobre el modelo
@@ -34,6 +35,8 @@ def main():
         st.write('''Accede a esta lista de reproducción de youtube de la [Universidad de 
         Valladolid](https://www.youtube.com/watch?v=BgbQB3jRxOI&list=PLSbo9kXA_Lcx5baMlEVo4s60RODjZiwsW) para acceder a un curso sobre IS-LM.''')
         st.markdown("""  """)
+       
+
     with rightcol1:
         results1 = ISLM_deploy(M,P,k,h,c,t,b,Ca,Ta,Ia,Tr,G,NX)
         st.markdown('**MERCADO DE DINERO Y LA RECTA LM**')
@@ -59,38 +62,19 @@ def main():
         st.latex(results1[12])
         st.write('Y ahora se pasa el nivel de renta a las rectas IS o LM:')
         st.latex(results1[14])
-        st.markdown("""---""")
+      
     
 
-
-    ##BODY
+    st.markdown("""---""")
+    ##BODY OF INTERACTIVE PART
     leftcol, rightcol = st.columns([2,1])
 
     with leftcol:
         tab1, tab2 = st.tabs(["Parámetros","📈 Gráficos"])
-
-        with st.container():
-            tab1.subheader('Entrada de Parámetros')
-            Mp = tab1.slider('Oferta Monetaria (M)',0,10000,400)
-            kp = tab1.slider('Sensibilidad a la Renta (k)',0,10000,4)
-            Gp = tab1.slider('Gasto (G)',0,10000,500)
-            hp = tab1.slider('Sensibilidad al tipo de interes (h)',0,10000,50)
-            Pp = tab1.slider('Nivel de Precios (P)',0,10000,1)
-            cp = tab1.slider('Propensión al consumo (c)',min_value=float(0), max_value=float(1),value=0.8,step=0.01)
-            tp = tab1.slider('Tasa Impositiva (t)',min_value=float(0), max_value=float(1),value=0.2,step=0.01)
-            bp = tab1.slider('Sensibilidad de la inversion (b)',0,10000,40)
-            Trp = tab1.slider('Transferencias (Tr)',0,10000,100)
-            Cap = tab1.slider('Consumo Autonomo (Ca)',0,10000,180)
-            Tap = tab1.slider('Impuesto Autonomo (Ta)',0,10000,50)
-            Iap = tab1.slider('Interes Autonomo (Ia)',0,10000,50)  
-            NXp = tab1.slider('Exportaciones Netas (NX)',0,10000,50)
-            data = {'Oferta Monetaria':round(Mp,2), 'Nivel de Precios':round(Pp,2), 'Sensibilidad a la Renta':round(kp,2),
-                                    'Sensibilidad al tipo de interes':round(hp,2), 'Pmg':round(cp,2), 'Tasa Impositiva':round(tp,2),
-                                    'Sensibilidad de la inversion':round(bp,2), 'Consumo Autonomo':round(Cap,2),'Impuesto Autonomo':round(Tap,2),
-                                    'Inversión Autonoma':round(Iap,2),'Trasnferencias':round(Trp,2),'Gasto':round(Gp,2),'Exportaciones Netas':round(NXp,2)}
-            feactures = pd.DataFrame(data,index=['Parameters'])
-            Mp,Pp,kp,hp,cp,tp,bp,Cap,Tap,Iap,Trp,Gp,NXp = tuple(feactures.loc['Parameters'])
-            plt, xresults = ISLM(Mp,Pp,kp,hp,cp,tp,bp,Cap,Tap,Iap,Trp,Gp,NXp)
+        tab1.subheader('Entrada de Parámetros')
+        feactures = parameters(tab1)
+        Mp,Pp,kp,hp,cp,tp,bp,Cap,Tap,Iap,Trp,Gp,NXp = tuple(feactures.loc['Parameters'])
+        plt, xresults = ISLM(Mp,Pp,kp,hp,cp,tp,bp,Cap,Tap,Iap,Trp,Gp,NXp)
         tab2.subheader('Grafica de Equilibrio de Mercado')
         tab2.pyplot(plt)
         tab2.markdown('''La gráfica muestra el punto de equilibrio/intercepción entre 

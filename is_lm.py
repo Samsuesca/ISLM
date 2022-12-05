@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import sympy as sp
 from PIL import Image
+import streamlit as st
 
 def definition():
     image = Image.open('islm.jpg')
@@ -70,6 +71,28 @@ def ISLM_deploy(M_,P_,k_,h_,c_,t_,b_,Ca_,Ta_,Ia_,Tr_,G_,NX_):
     list = [Leq,Leq_,MPeq,MPeq_,LM,LM_,A,A_,LS,LS_,iequ,iequ_,yeq,yeq_,ieq,ieq_]
     return [sp.latex(i) for i in list]
 
+def parameters(tab1):
+    
+    Gp = tab1.slider('Gasto (G)',0,10000,500)
+    cp = tab1.slider('Propensión al consumo (c)',min_value=float(0), max_value=float(1),value=0.8,step=0.01)
+    tp = tab1.slider('Tasa Impositiva (t)',min_value=float(0), max_value=float(1),value=0.2,step=0.01)
+    bp = tab1.slider('Sensibilidad de la inversion (b)',0,10000,40)
+    Trp = tab1.slider('Transferencias (Tr)',0,10000,100)
+    Cap = tab1.slider('Consumo Autonomo (Ca)',0,10000,180)
+    Tap = tab1.slider('Impuesto Autonomo (Ta)',0,10000,50)
+    Iap = tab1.slider('Interes Autonomo (Ia)',0,10000,50)  
+    NXp = tab1.slider('Exportaciones Netas (NX)',0,10000,50)
+    Mp = tab1.slider('Oferta Monetaria (M)',0,10000,400)
+    kp = tab1.slider('Sensibilidad a la Renta (k)',0,10000,4)
+    hp = tab1.slider('Sensibilidad al tipo de interes (h)',0,10000,50)
+    Pp = tab1.slider('Nivel de Precios (P)',0,10000,1)
+    data = {'Oferta Monetaria':round(Mp,2), 'Nivel de Precios':round(Pp,2), 'Sensibilidad a la Renta':round(kp,2),
+                                    'Sensibilidad al tipo de interes':round(hp,2), 'Pmg':round(cp,2), 'Tasa Impositiva':round(tp,2),
+                                    'Sensibilidad de la inversion':round(bp,2), 'Consumo Autonomo':round(Cap,2),'Impuesto Autonomo':round(Tap,2),
+                                    'Inversión Autonoma':round(Iap,2),'Trasnferencias':round(Trp,2),'Gasto':round(Gp,2),'Exportaciones Netas':round(NXp,2)}
+    feactures = pd.DataFrame(data,index=['Parameters'])
+    return feactures
+       
 
 if __name__ == '__main__':
     ISLM_deploy(M,P,k,h,c,t,b,Ca,Ta,Ia,Tr,G,NX)
