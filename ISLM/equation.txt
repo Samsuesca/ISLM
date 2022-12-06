@@ -1,0 +1,8 @@
+L = Y k - h i
+L = \frac{M}{P}
+Y = \frac{M + P h i}{P k}
+A = Ca + G + Ia + NX + c \left(- Ta + Tr\right)
+Y = \frac{A - b i}{- c \left(1 - t\right) + 1}
+\frac{M + P h i}{P k} = \frac{A - b i}{- c \left(1 - t\right) + 1}
+i = \frac{A P k - M c t + M c - M}{P \left(b k + c h t - c h + h\right)}
+Y = \frac{A - \frac{b \left(A P k - M c t + M c - M\right)}{P \left(b k + c h t - c h + h\right)}}{- c \left(1 - t\right) + 1}
