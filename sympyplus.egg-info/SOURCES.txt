@@ -1,7 +1,0 @@
-setup.py
-sympyplus/__init__.py
-sympyplus/utils_sp.py
-sympyplus.egg-info/PKG-INFO
-sympyplus.egg-info/SOURCES.txt
-sympyplus.egg-info/dependency_links.txt
-sympyplus.egg-info/top_level.txt

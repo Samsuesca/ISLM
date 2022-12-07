@@ -1,18 +1,16 @@
 import sympy as sp
 import numpy as np
-# import sys
-# sys.path.append("../sympyplus")
 import matplotlib.pyplot as plt
 import pandas as pd 
 from PIL import Image
-from sympyplus import utils_sp as ut
+from Utils import utils_sp as ut
 
 #Definir Simbolos del modelo
 M,P,k,h,c,t,b,Ca,Ta,Ia,Tr,G,NX,L,Y,DA,I,T,C,A,i,Yd = sp.symbols('M,P,k,h,c,t,b,Ca,Ta,Ia,Tr,G,NX,L,Y,DA,I,T,C,A,i,Yd')
 
         
 #Clase del modelo
-class ISLMProcces:
+class ISLMProcess:
 
     def __init__(self):
 
@@ -24,6 +22,29 @@ class ISLMProcces:
         self.iequ = None
         self.yeq = None
         self.ieq = None 
+    
+    def parameters(tab1,coll, colr):
+        with coll:
+            Gp = tab1.slider('Gasto (G)',0,10000,500)
+            cp = tab1.slider('Propensión al consumo (c)',min_value=float(0), max_value=float(1),value=0.8,step=0.01)
+            tp = tab1.slider('Tasa Impositiva (t)',min_value=float(0), max_value=float(1),value=0.2,step=0.01)
+            bp = tab1.slider('Sensibilidad de la inversion (b)',0,10000,40)
+            Trp = tab1.slider('Transferencias (Tr)',0,10000,100)
+            Cap = tab1.slider('Consumo Autonomo (Ca)',0,10000,180)
+            Tap = tab1.slider('Impuesto Autonomo (Ta)',0,10000,50)
+            Iap = tab1.slider('Interes Autonomo (Ia)',0,10000,50)  
+            NXp = tab1.slider('Exportaciones Netas (NX)',0,10000,50)
+        with colr:
+            Mp = tab1.slider('Oferta Monetaria (M)',0,10000,400)
+            kp = tab1.slider('Sensibilidad a la Renta (k)',0,10000,4)
+            hp = tab1.slider('Sensibilidad al tipo de interes (h)',0,10000,50)
+            Pp = tab1.slider('Nivel de Precios (P)',0,10000,1)
+        data = {'Oferta Monetaria':round(Mp,2), 'Nivel de Precios':round(Pp,2), 'Sensibilidad a la Renta':round(kp,2),
+                                        'Sensibilidad al tipo de interes':round(hp,2), 'Pmg':round(cp,2), 'Tasa Impositiva':round(tp,2),
+                                        'Sensibilidad de la inversion':round(bp,2), 'Consumo Autonomo':round(Cap,2),'Impuesto Autonomo':round(Tap,2),
+                          'Inversión Autonoma':round(Iap,2),'Trasnferencias':round(Trp,2),'Gasto':round(Gp,2),'Exportaciones Netas':round(NXp,2)}
+        feactures = pd.DataFrame(data,index=['Parameters'])
+        return feactures
 
     #Print de image definition
     def img_definition():
@@ -86,7 +107,7 @@ class ISLMProcces:
         list = [Leq,M_a,Peq,Treq,Geq,NXeq,Teq,Ydeq,Ceq,Ieq]
         return [sp.latex(i) for i in list]
 
-    def graficar():
+    def graficar(M,P,k,h,c,t,b,Ca,Ta,Ia,Tr,G,NX):
         i = np.linspace(0,1000000)
         M_P = M/P 
         Y1 = M_P/k + (h*i)/k
@@ -108,6 +129,6 @@ class ISLMProcces:
 
 if __name__ == '__main__':
     with open('ISLM/equation.txt','w') as f:
-        for i in ISLMProcces().make_procces():
+        for i in ISLMProcess().make_procces():
             f.write(i)
             f.write('\n')
