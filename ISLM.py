@@ -68,14 +68,15 @@ class ISLMProcess:
     #Realizar un ejercicio dado los parametros
     def make_exercise(self,M_,P_,k_,h_,c_,t_,b_,Ca_,Ta_,Ia_,Tr_,G_,NX_):
         self.Leq = ut.Equation(L,k_*Y-h_*i)
-        self.MPeq = ut.Equation(L,M_/P_)
+        self.MPeq = ut.Equation(M/P,M_/P_)
+        inter = ut.Equation(self.Leq.rhs,self.MPeq.rhs).evalf(3)
         self.LM = ut.Equation(self.MPeq.rhs,self.Leq.rhs).solution_equals(Y,Y).evalf(3)
-        self.Aeq = ut.Equation(A,Ca_ + Ia_ + G_ + NX_ + c_*(Tr_ - Ta_))
-        self.LS = ut.Equation(Y,(self.Aeq.rhs-b_*i)/(1-c_*(1-t_)))
+        self.Aeq = ut.Equation(A,Ca_ + Ia_ + G_ + NX_ + c_*(Tr_ - Ta_)).evalf(3)
+        self.LS = ut.Equation(Y,(self.Aeq.rhs-b_*i)/(1-c_*(1-t_))).evalf(3)
         self.iequ = ut.Equation(self.LM.rhs,self.LS.rhs)
-        self.ieq = self.iequ.solution_equals(i,i)
-        self.yeq = ut.Equation(Y,self.LS.subs(i,self.ieq.rhs).rhs)
-        eq = [self.Leq,self.MPeq,self.LM,self.Aeq,self.LS,self.iequ,self.ieq,self.yeq]
+        self.ieq = self.iequ.solution_equals(i,i).evalf(3)
+        self.yeq = ut.Equation(Y,self.LS.subs(i,self.ieq.rhs).rhs).evalf(3)
+        eq = [self.Leq,self.MPeq,inter,self.LM,self.Aeq,self.LS,self.iequ,self.ieq,self.yeq]
         return [sp.latex(e) for e in eq]
 
     #Realiza desplazamiento de mercados por cambios de factores
@@ -93,7 +94,7 @@ class ISLMProcess:
 
     def get_description(M_,P_,k_,h_,c_,t_,b_,Ca_,Ta_,Ia_,Tr_,G_,NX_):
     ## get the equations of the model
-        Leq = sp.Eq(L,k*Y-h*i)
+        Leq = sp.Eq(L,k_*Y-h_*i)
         M_a = sp.Eq(M,M_)
         Peq = sp.Eq(P,P_)
         Treq = sp.Eq(Tr,Tr_)
@@ -107,24 +108,89 @@ class ISLMProcess:
         list = [Leq,M_a,Peq,Treq,Geq,NXeq,Teq,Ydeq,Ceq,Ieq]
         return [sp.latex(i) for i in list]
 
-    def graficar(M,P,k,h,c,t,b,Ca,Ta,Ia,Tr,G,NX):
-        i = np.linspace(0,1000000)
+    def graficar(M,P,k,h,c,t,b,Ca,Ta,Ia,Tr,G,NX,
+                DM,DP,Dk,Dh,Dc,Dt,Db,DCa,DTa,DIa,DTr,DG,DNX):
+
+        #entradas normales - rectas 
+
+        plt.rcParams.update({'font.size': 22})
+        i = np.linspace(0,10000)
         M_P = M/P 
         Y1 = M_P/k + (h*i)/k
-        A = Ca + Ia + G + NX + c*Tr - c*Ta
+        A = Ca + Ia + G + NX + c*Tr - c*Ta 
         Y2 = (A-b*i)/(1-c*(1-t))
         C = np.array([[k,-h],[1-c*(1-t),b]])
         B = np.array([[M_P],[A]])
         X = np.linalg.inv(C).dot(B)
-        fig, ax = plt.subplots()
+        i1 = np.linspace(0,X[0]*k/h+100)
+        Y = np.linspace(0,X[0]+X[0]*0.3)
+
+        #deltas: son la configuración de los desplazamientos
+        deltasIS = np.array([Dc,Dt,Db,DCa,DTa,DIa,DTr,DG,DNX])
+        deltasLM = np.array([DM,DP,Dk,Dh])
+        DM_P = DM/DP 
+        DY1 = DM_P/Dk + (Dh*i)/Dk
+        D_A = DCa + DIa +DG + DNX + Dc*DTr - Dc*DTa 
+        DY2 = (D_A-Db*i)/(1-Dc*(1-Dt))
+        DC = np.array([[Dk,-Dh],[1-Dc*(1-Dt),Db]])
+        DB = np.array([[DM_P],[D_A]])
+        DX = np.linalg.inv(DC).dot(DB)
+        Di1 = np.linspace(0,DX[0]*Dk/Dh+100)
+        DY = np.linspace(0,DX[0]+DX[0]*0.3)
+
+        ##grafica equilibrio mercado
+
+        fig1, ax = plt.subplots(figsize=(10, 8))
         ax.plot(i, Y1)
         ax.plot(i,Y2)
-        ax.set_xlim(0,float(X[1]) + 3)
-        ax.set_ylim(0,int(X[0]+100))
-        ax.set_xlabel('Interest Rate')
-        ax.set_ylabel('Total Output')
-        ax.set_title('IS-LM Model')  
-        return fig, pd.DataFrame(X,index=['Nivel de Renta','Tasa de Interes'],columns=['Equilibrio Economía'])
+        ax.set_xlim(0,float(X[1]) + X[1]*0.2)
+        ax.set_ylim(0,int(X[0]+X[0]*0.2))
+        ax.set_xlabel('Tasa de Interés')
+        ax.set_ylabel('Producto Total')
+        ax.set_title('EQUILIBRIO IS-LM') 
+        
+        if np.any(deltasIS != 0):
+            ax.plot(i,DY2)
+           
+            if np.any(deltasLM != 0):
+                ax.plot(i,DY1)
+                ax.legend(['IS-1', 'LM-1','IS-2','LM-2'])
+            else:
+                ax.legend(['IS-1', 'LM-1','IS-2'])
+        
+        elif np.any(deltasLM != 0):
+            ax.plot(i,DY1)
+            ax.legend(['IS-1', 'LM-1','LM-2'])
+        
+        else:
+            ax.legend(['IS-1', 'LM-1'])
+
+        ##grafica IS
+
+        fig2, ax2 = plt.subplots(figsize=(10, 8))
+        ax2.plot(Y,A+c*(1-t)*Y-b*X[1])
+        
+        ax2.plot(Y,Y)
+        ax2.legend(['Producto Total', 'Demanda Agregada = Y'])
+        ax2.set_xlabel('Y')
+        ax2.set_ylabel('Demanda Agregada')
+        ax2.set_xlim(0,float(X[0]) + X[0]*0.2)
+        ax2.set_ylim(0,int(X[0]+X[0]*0.2))
+
+        ##grafica LM
+
+        fig3, ax3 = plt.subplots(figsize=(10, 8))
+        ax3.plot(k*X[0]-h*i1,i1)
+        mp = np.array([M_P for i in range(len(i1))])
+        ax3.plot(mp,i1)
+        ax3.legend(['Demanda de Dinero', 'Oferta de Dinero'])
+        ax3.set_xlabel('Dinero')
+        ax3.set_ylabel('Tasa de Interes')
+        ax3.set_xlim(0,M_P + M_P*0.2)
+        ax3.set_ylim(0,int(X[0]+X[0]*0.2))
+        
+        #pd.DataFrame(X,index=['Nivel de Renta','Tasa de Interes'],columns=['Equilibrio Economía'])
+        return fig1,fig2,fig3
 
 
 if __name__ == '__main__':
