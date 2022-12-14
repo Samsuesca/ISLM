@@ -1,5 +1,6 @@
 import sympy as sp
 import numpy as np
+import streamlit as st
 import matplotlib.pyplot as plt
 import pandas as pd 
 from PIL import Image
@@ -23,28 +24,87 @@ class ISLMProcess:
         self.yeq = None
         self.ieq = None 
     
-    def parameters(tab1,coll, colr):
-        with coll:
-            Gp = tab1.slider('Gasto (G)',0,10000,500)
-            cp = tab1.slider('Propensión al consumo (c)',min_value=float(0), max_value=float(1),value=0.8,step=0.01)
-            tp = tab1.slider('Tasa Impositiva (t)',min_value=float(0), max_value=float(1),value=0.2,step=0.01)
-            bp = tab1.slider('Sensibilidad de la inversion (b)',0,10000,40)
-            Trp = tab1.slider('Transferencias (Tr)',0,10000,100)
-            Cap = tab1.slider('Consumo Autonomo (Ca)',0,10000,180)
-            Tap = tab1.slider('Impuesto Autonomo (Ta)',0,10000,50)
-            Iap = tab1.slider('Interes Autonomo (Ia)',0,10000,50)  
-            NXp = tab1.slider('Exportaciones Netas (NX)',0,10000,50)
-        with colr:
-            Mp = tab1.slider('Oferta Monetaria (M)',0,10000,400)
-            kp = tab1.slider('Sensibilidad a la Renta (k)',0,10000,4)
-            hp = tab1.slider('Sensibilidad al tipo de interes (h)',0,10000,50)
-            Pp = tab1.slider('Nivel de Precios (P)',0,10000,1)
+    #agregar parametros
+    def parameters(leftcola,leftcolb,rightcola,rightcolb):
+
+        with leftcola:
+            st.write('')
+            kp = st.number_input('Sensldad.-Renta (k)',0,10000,1)
+            hp = st.number_input('Sensldad.-t_rinteres (h)',0,10000,1)
+            Mp = st.number_input('Oferta Monetaria (M)',0,10000,400)
+            Pp = st.number_input('Nivel de Precios (P)',0,10000,1)
+            
+        with leftcolb:
+            st.write('---')
+            Trp = st.number_input('Transferencias (Tr)',0,10000,0)
+            st.write('')
+            Gp = st.number_input('Gasto (G)',0,10000,1000)
+            st.write('')
+            NXp = st.number_input('Export. Netas (NX)',0,10000,0)
+            
+        with rightcola:
+            st.write('---')
+            Cap = st.number_input('Cons. Autonomo (Ca)',0,10000,0)
+            st.write('')
+            Tap = st.number_input('Impuesto Autonomo (Ta)',0,10000,0)
+            st.write('')
+            Iap = st.number_input('Interes Autonomo (Ia)',0,10000,0)  
+        with rightcolb:
+            st.write('---')
+            cp = st.number_input('Prop. al consumo (c)',min_value=float(0), max_value=float(1),value=0.8,step=0.01)
+            st.write('')
+            tp = st.number_input('Tasa Impositiva (t)',min_value=float(0), max_value=float(1),value=0.2,step=0.01)
+            st.write('')
+            bp = st.number_input('Senbldad.-inversion (b)',0,10000,1)
+            
         data = {'Oferta Monetaria':round(Mp,2), 'Nivel de Precios':round(Pp,2), 'Sensibilidad a la Renta':round(kp,2),
-                                        'Sensibilidad al tipo de interes':round(hp,2), 'Pmg':round(cp,2), 'Tasa Impositiva':round(tp,2),
-                                        'Sensibilidad de la inversion':round(bp,2), 'Consumo Autonomo':round(Cap,2),'Impuesto Autonomo':round(Tap,2),
-                          'Inversión Autonoma':round(Iap,2),'Trasnferencias':round(Trp,2),'Gasto':round(Gp,2),'Exportaciones Netas':round(NXp,2)}
+                                    'Sensibilidad al tipo de interes':round(hp,2), 'Pmg':round(cp,2), 'Tasa Impositiva':round(tp,2),
+                                    'Sensibilidad de la inversion':round(bp,2), 'Consumo Autonomo':round(Cap,2),'Impuesto Autonomo':round(Tap,2),
+                        'Inversión Autonoma':round(Iap,2),'Trasnferencias':round(Trp,2),'Gasto':round(Gp,2),'Exportaciones Netas':round(NXp,2)}
         feactures = pd.DataFrame(data,index=['Parameters'])
-        return feactures
+        
+        return feactures.loc['Parameters']
+
+    #agregar deplazamientos
+    def deltas(leftcola,leftcolb,rightcola,rightcolb):
+        with leftcola:
+            st.write('')
+            Dkp = st.number_input('Delta (k)',-10000,10000,0)
+            Dhp = st.number_input('Delta (h)',-10000,10000,0)
+            DMp = st.number_input('Delta (M)',-100000,100000,0)
+            DPp = st.number_input('Delta (P)',-100000,100000,0)
+            
+        with leftcolb:
+            st.write('---')
+            DTrp = st.number_input('Delta (Tr)',-100000,100000,0)
+            st.write('')
+            DGp = st.number_input('Delta (G)',-100000,100000,0)
+            st.write('')
+            DNXp = st.number_input('Delta (NX)',0,10000,0)
+            
+        with rightcola:
+            st.write('---')
+            DCap = st.number_input('Delta (Ca)',-100000,100000,0)
+            st.write('')
+            DTap = st.number_input('Delta (Ta)',-100000,100000,0)
+            st.write('')
+            DIap = st.number_input('Delta (Ia)',-100000,100000,0)  
+
+        with rightcolb:
+            st.write('---')
+            Dcp = st.number_input('Delta (c)',min_value=float(-1), max_value=float(1),value=float(0),step=0.01)
+            st.write('')
+            Dtp = st.number_input('Delta (t)',min_value=float(-1), max_value=float(1),value=float(0),step=0.01)
+            st.write('')
+            Dbp = st.number_input('Delta (b)',-10000,10000,0)
+            
+        Ddata = {'Oferta Monetaria':round(DMp,2), 'Nivel de Precios':round(DPp,2), 'Sensibilidad a la Renta':round(Dkp,2),
+                                    'Sensibilidad al tipo de interes':round(Dhp,2), 'Pmg':round(Dcp,2), 'Tasa Impositiva':round(Dtp,2),
+                                    'Sensibilidad de la inversion':round(Dbp,2), 'Consumo Autonomo':round(DCap,2),'Impuesto Autonomo':round(DTap,2),
+                        'Inversión Autonoma':round(DIap,2),'Trasnferencias':round(DTrp,2),'Gasto':round(DGp,2),'Exportaciones Netas':round(DNXp,2)}
+        Dfeactures = pd.DataFrame(Ddata,index=['Parameters'])
+        return Dfeactures.loc['Parameters']
+
 
     #Print de image definition
     def img_definition():
@@ -92,6 +152,7 @@ class ISLMProcess:
         eq = [self.Leq0,self.MPeq0,self.LM0,self.Aeq0,self.LS0,self.iequ0,self.ieq0,self.yeq0]
         return [sp.latex(e) for e in eq]
 
+    #DESCRIPCIÓN DEL MODELO
     def get_description(M_,P_,k_,h_,c_,t_,b_,Ca_,Ta_,Ia_,Tr_,G_,NX_):
     ## get the equations of the model
         Leq = sp.Eq(L,k_*Y-h_*i)
@@ -108,6 +169,8 @@ class ISLMProcess:
         list = [Leq,M_a,Peq,Treq,Geq,NXeq,Teq,Ydeq,Ceq,Ieq]
         return [sp.latex(i) for i in list]
 
+
+    #GRAFICOS
     def graficar(M,P,k,h,c,t,b,Ca,Ta,Ia,Tr,G,NX,
                 DM,DP,Dk,Dh,Dc,Dt,Db,DCa,DTa,DIa,DTr,DG,DNX):
 
@@ -128,14 +191,14 @@ class ISLMProcess:
         #deltas: son la configuración de los desplazamientos
         deltasIS = np.array([Dc,Dt,Db,DCa,DTa,DIa,DTr,DG,DNX])
         deltasLM = np.array([DM,DP,Dk,Dh])
-        DM_P = DM/DP 
-        DY1 = DM_P/Dk + (Dh*i)/Dk
-        D_A = DCa + DIa +DG + DNX + Dc*DTr - Dc*DTa 
-        DY2 = (D_A-Db*i)/(1-Dc*(1-Dt))
-        DC = np.array([[Dk,-Dh],[1-Dc*(1-Dt),Db]])
-        DB = np.array([[DM_P],[D_A]])
+        DM_P = (DM+M)/(DP+P) 
+        DY1 = (DM_P+M_P)/(Dk+k) + (Dh+h)*(i)/(Dk+k)
+        D_A =  (Ia+ DIa)+(G+DG) + (DNX+NX)+ (c*Tr+Dc*DTr) - (Dc*DTa+c*Ta)+(DCa+Ca)
+        DY2 = (D_A+A-Db*i-b*i)/(1-(Dc+c)*(1-(Dt+t)))
+        DC = np.array([[(Dk+k),-(Dh+h)],[1-(c+Dc)*(1-(t+Dt)),(Db+b)]])
+        DB = np.array([[(DM_P+P)],[(A+D_A)]])
         DX = np.linalg.inv(DC).dot(DB)
-        Di1 = np.linspace(0,DX[0]*Dk/Dh+100)
+        Di1 = np.linspace(0,DX[0]*(Dk+k)/(h+Dh)+100)
         DY = np.linspace(0,DX[0]+DX[0]*0.3)
 
         ##grafica equilibrio mercado

@@ -151,42 +151,7 @@ def main():
 
         st.markdown("***Entrada de Parámetros***")
         leftcola,leftcolb,rightcola,rightcolb = st.columns(4)
-        with leftcola:
-            st.write('')
-            kp = st.number_input('Sensldad.-Renta (k)',0,10000,1)
-            hp = st.number_input('Sensldad.-t_rinteres (h)',0,10000,1)
-            Mp = st.number_input('Oferta Monetaria (M)',0,10000,400)
-            Pp = st.number_input('Nivel de Precios (P)',0,10000,1)
-            
-        with leftcolb:
-            st.write('---')
-            Trp = st.number_input('Transferencias (Tr)',0,10000,0)
-            st.write('')
-            Gp = st.number_input('Gasto (G)',0,10000,1000)
-            st.write('')
-            NXp = st.number_input('Export. Netas (NX)',0,10000,0)
-            
-        with rightcola:
-            st.write('---')
-            Cap = st.number_input('Cons. Autonomo (Ca)',0,10000,0)
-            st.write('')
-            Tap = st.number_input('Impuesto Autonomo (Ta)',0,10000,0)
-            st.write('')
-            Iap = st.number_input('Interes Autonomo (Ia)',0,10000,0)  
-        with rightcolb:
-            st.write('---')
-            cp = st.number_input('Prop. al consumo (c)',min_value=float(0), max_value=float(1),value=0.8,step=0.01)
-            st.write('')
-            tp = st.number_input('Tasa Impositiva (t)',min_value=float(0), max_value=float(1),value=0.2,step=0.01)
-            st.write('')
-            bp = st.number_input('Senbldad.-inversion (b)',0,10000,1)
-            
-        data = {'Oferta Monetaria':round(Mp,2), 'Nivel de Precios':round(Pp,2), 'Sensibilidad a la Renta':round(kp,2),
-                                    'Sensibilidad al tipo de interes':round(hp,2), 'Pmg':round(cp,2), 'Tasa Impositiva':round(tp,2),
-                                    'Sensibilidad de la inversion':round(bp,2), 'Consumo Autonomo':round(Cap,2),'Impuesto Autonomo':round(Tap,2),
-                        'Inversión Autonoma':round(Iap,2),'Trasnferencias':round(Trp,2),'Gasto':round(Gp,2),'Exportaciones Netas':round(NXp,2)}
-        feactures = pd.DataFrame(data,index=['Parameters'])
-        Mp,Pp,kp,hp,cp,tp,bp,Cap,Tap,Iap,Trp,Gp,NXp = tuple(feactures.loc['Parameters'])
+        Mp,Pp,kp,hp,cp,tp,bp,Cap,Tap,Iap,Trp,Gp,NXp = ISLMProcess.parameters(leftcola,leftcolb,rightcola,rightcolb)
         
     
         st.write('')
@@ -196,43 +161,8 @@ def main():
 
         st.markdown("***Deltas***")
         leftcola,leftcolb,rightcola,rightcolb = st.columns(4)
-        with leftcola:
-            st.write('')
-            Dkp = st.number_input('Delta (k)',0,10000,0)
-            Dhp = st.number_input('Delta (h)',0,10000,0)
-            DMp = st.number_input('Delta (M)',0,10000,0)
-            DPp = st.number_input('Delta (P)',0,10000,0)
-            
-        with leftcolb:
-            st.write('---')
-            DTrp = st.number_input('Delta (Tr)',0,10000,0)
-            st.write('')
-            DGp = st.number_input('Delta (G)',0,10000,1000)
-            st.write('')
-            DNXp = st.number_input('Delta (NX)',0,10000,0)
-            
-        with rightcola:
-            st.write('---')
-            DCap = st.number_input('Delta (Ca)',0,10000,0)
-            st.write('')
-            DTap = st.number_input('Delta (Ta)',0,10000,0)
-            st.write('')
-            DIap = st.number_input('Delta (Ia)',0,10000,0)  
-
-        with rightcolb:
-            st.write('---')
-            Dcp = st.number_input('Delta (c)',min_value=float(0), max_value=float(1),value=0.8,step=0.01)
-            st.write('')
-            Dtp = st.number_input('Delta (t)',min_value=float(0), max_value=float(1),value=0.2,step=0.01)
-            st.write('')
-            Dbp = st.number_input('Delta (b)',0,10000,1)
-            
-        Ddata = {'Oferta Monetaria':round(DMp,2), 'Nivel de Precios':round(DPp,2), 'Sensibilidad a la Renta':round(Dkp,2),
-                                    'Sensibilidad al tipo de interes':round(Dhp,2), 'Pmg':round(Dcp,2), 'Tasa Impositiva':round(Dtp,2),
-                                    'Sensibilidad de la inversion':round(Dbp,2), 'Consumo Autonomo':round(DCap,2),'Impuesto Autonomo':round(DTap,2),
-                        'Inversión Autonoma':round(DIap,2),'Trasnferencias':round(DTrp,2),'Gasto':round(DGp,2),'Exportaciones Netas':round(DNXp,2)}
-        Dfeactures = pd.DataFrame(Ddata,index=['Parameters'])
-        DMp,DPp,Dkp,Dhp,Dcp,Dtp,Dbp,DCap,DTap,DIap,DTrp,DGp,DNXp = tuple(Dfeactures.loc['Parameters'])
+    
+        DMp,DPp,Dkp,Dhp,Dcp,Dtp,Dbp,DCap,DTap,DIap,DTrp,DGp,DNXp = ISLMProcess.deltas(leftcola,leftcolb,rightcola,rightcolb)
         
     
         st.write('')
