@@ -80,7 +80,7 @@ class ISLMProcess:
             st.write('')
             DGp = st.number_input('Delta (G)',-100000,100000,0)
             st.write('')
-            DNXp = st.number_input('Delta (NX)',0,10000,0)
+            DNXp = st.number_input('Delta (NX)',-100000,10000,0)
             
         with rightcola:
             st.write('---')

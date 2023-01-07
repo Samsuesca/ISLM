@@ -6,9 +6,6 @@
   parameters of the model and see the resulting changes in the equilibrium.'''
 
 import streamlit as st
-import pandas as pd 
-import numpy as np
-import sympy as sp
 from ISLM import ISLMProcess
 
 def main():
@@ -19,7 +16,7 @@ def main():
 
     ## DESCRIPCÓN PRINCIPAL 
     st.markdown("""---""")
-    st.title('             BLOG:  Modelo IS-LM                ')
+    st.title('BLOG:  Modelo IS-LM')
     st.markdown("""---""")
     st.markdown(f'''
         **GENERALIDADES DEL BLOG** \n
@@ -156,25 +153,21 @@ def main():
     
         st.write('')
 
-        ##CODIGO SI ELIGE DESPLAZAMIENTOS EN EL MODELO
+    #CODIGO SI ELIGE DESPLAZAMIENTOS EN EL MODELO
     with tab2:
-
         st.markdown("***Deltas***")
         leftcola,leftcolb,rightcola,rightcolb = st.columns(4)
-    
         DMp,DPp,Dkp,Dhp,Dcp,Dtp,Dbp,DCap,DTap,DIap,DTrp,DGp,DNXp = ISLMProcess.deltas(leftcola,leftcolb,rightcola,rightcolb)
-        
-    
         st.write('')
  
-    ##REALIZACIÓN DELA GRAFICA
 
+
+    ##REALIZACIÓN DELA GRAFICA
     Col1,Col2,Col3 = st.columns([1.3,1.3,2])
     plt, plt1,plt2 = ISLMProcess.graficar(Mp,Pp,kp,hp,cp,tp,bp,Cap,Tap,Iap,Trp,Gp,NXp,
                             DMp,DPp,Dkp,Dhp,Dcp,Dtp,Dbp,DCap,DTap,DIap,DTrp,DGp,DNXp)
     
-    with Col1:
-        
+    with Col1: 
         st.subheader('Construcción IS')
         st.pyplot(plt1)
         st.markdown('''La gráfica de DA vs Y se muestra cómo cambia la DA cuando
@@ -199,8 +192,10 @@ def main():
         tasa de interes de equilibrio''')
 
 
-    ##resultados ejercicio
+    ##RESULTADOS EJERCICIO
     tab1, tab2 = st.tabs(["Modelo","Procedimiento"])
+
+    #Parámetros configurados
     tab1.subheader('Parametros Configurados')
     equations = ISLMProcess.get_description(Mp,Pp,kp,hp,cp,tp,bp,Cap,Tap,Iap,Trp,Gp,NXp)
     with tab1:
@@ -212,9 +207,13 @@ def main():
             for i in range(5,len(equations)):
                 st.latex(equations[i])
 
+
+    #PROCEDIMIENTO
     tab2.subheader('Procedimiento')
     tab2.markdown('Puedes Ejecutar el procedimiento, dando click en el botón')
     if tab2.button('Ejecutar'):
+    
+        #PROCESO CURVA LM:
         results = ISLMProcess().make_exercise(Mp,Pp,kp,hp,cp,tp,bp,Cap,Tap,Iap,Trp,Gp,NXp)
         tab2.markdown('**Obtener la recta LM**')
         tab2.write('La demanda de dinero, como se vio anteriormente, quedaría:')
@@ -226,6 +225,7 @@ def main():
         tab2.write('Despejando para Y,  la siguiente expresión representa la recta LM')
         tab2.latex(results[3])
 
+        #PROCESO CURVA IS:
         tab2.markdown('**Obtener la recta IS**')
         tab2.write('Partiendo del equilibrio del mercado de dinero, es decir DA=Y,r tenemos que el componente autonomo y la recta IS de esta economía son:')
         tab2.latex(results[4])
@@ -239,10 +239,6 @@ def main():
         tab2.latex(results[8])
 
     st.markdown("""---""")
-
-   
-    
-   
 
 if __name__ == '__main__':
     main()
